@@ -1,0 +1,52 @@
+name: Build iOS IPA (Junior Edition)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build-ios:
+    name: Build Unsigned iOS IPA
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: |
+          flutter pub get
+
+      - name: Install CocoaPods
+        run: |
+          cd ios
+          pod install --repo-update
+          cd ..
+
+      - name: Build Unsigned IPA
+        run: |
+          flutter build ipa --no-codesign
+
+      - name: Package Payload to IPA
+        run: |
+          mkdir -p build/ios/ipa_unsigned
+          cd build/ios/archive/Runner.xcarchive/Products/Applications
+          mkdir -p Payload
+          cp -r Runner.app Payload/
+          zip -r ../../../../ipa_unsigned/LazyVocab-Junior-iOS.ipa Payload
+          cd ../../../../..
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LazyVocab-Junior-iOS-Unsigned
+          path: build/ios/ipa_unsigned/LazyVocab-Junior-iOS.ipa
+          if-no-files-found: warn

@@ -9,7 +9,7 @@
   <link rel="apple-touch-icon" href="icon.png">
   <title>懒得记单词 - 极速洗脑浸润</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
-  <script src="tailwind.js"></script>
+  <link rel="stylesheet" href="tailwind.min.css">
   <style>
     :root {
       --bg: #050811;
@@ -33,18 +33,21 @@
       padding: 0;
     }
 
-    /* 9:16 桌面模拟容器 */
+    /* 9:16 桌面模拟容器（增加 iOS 13.6 calc 兼容尺寸） */
     .viewport-9-16 {
-      aspect-ratio: 9 / 16;
       max-height: 94vh;
+      width: calc(94vh * 9 / 16);
       width: auto;
       height: 94vh;
+      aspect-ratio: 9 / 16;
     }
     @media (max-width: 640px) {
       .viewport-9-16 {
         aspect-ratio: unset;
         width: 100vw;
+        height: 100vh;
         height: 100dvh;
+        max-height: 100vh;
         max-height: 100dvh;
         border-radius: 0 !important;
         border: none !important;
@@ -56,18 +59,38 @@
 
     /* 16:9 横屏双栏模式 */
     .viewport-landscape {
-      aspect-ratio: 16 / 9;
       max-height: 90vh;
+      width: calc(90vh * 16 / 9);
       width: auto;
       height: 90vh;
+      aspect-ratio: 16 / 9;
     }
 
-    /* 移动端全屏模式 */
+    /* 移动端全屏模式（增加 100vh 兜底，防止 iOS 13.6 dvh 失效导致高度塌陷） */
     .viewport-fullscreen {
       width: 100vw;
+      height: 100vh;
       height: 100dvh;
+      max-height: 100vh;
+      max-height: 100dvh;
       border-radius: 0 !important;
       border: none !important;
+    }
+
+    /* iOS 13 经典 WebKit 模糊与间距兜底 */
+    .backdrop-blur-md {
+      -webkit-backdrop-filter: blur(12px) !important;
+      backdrop-filter: blur(12px) !important;
+    }
+    .backdrop-blur-sm {
+      -webkit-backdrop-filter: blur(4px) !important;
+      backdrop-filter: blur(4px) !important;
+    }
+    #letters-container > * {
+      margin: 3px !important;
+    }
+    #sylls-container > * {
+      margin: 4px !important;
     }
 
     /* 呼吸与点亮动效 */
@@ -208,7 +231,7 @@
         </div>
 
         <!-- 单词大字：移动端字号彻底拉满！careless 直接给 82px~92px 霸屏 -->
-        <h1 id="word-main" class="font-black text-white text-center leading-none my-auto drop-shadow-[0_4px_24px_rgba(255,255,255,0.3)] select-none break-keep transition-all duration-200" style="font-size: clamp(76px, 16vw, 92px); font-weight: 900; line-height: 1;">
+        <h1 id="word-main" class="font-black text-white text-center leading-none my-auto drop-shadow-[0_4px_24px_rgba(255,255,255,0.3)] select-none break-keep transition-all duration-200" style="font-size: 76px; font-size: clamp(76px, 16vw, 92px); font-weight: 900; line-height: 1;">
           careless
         </h1>
         
@@ -218,7 +241,7 @@
         </div>
 
         <!-- 中文释义：特大加粗黄金高亮，视觉冲击直入潜意识！ -->
-        <div id="word-zh" class="font-black text-[#ffd166] text-center leading-none my-1 drop-shadow-[0_4px_20px_rgba(255,209,102,0.5)] select-none transition-all duration-200" style="font-size: clamp(52px, 13vw, 68px); font-weight: 900; color: #ffd166;">
+        <div id="word-zh" class="font-black text-[#ffd166] text-center leading-none my-1 drop-shadow-[0_4px_20px_rgba(255,209,102,0.5)] select-none transition-all duration-200" style="font-size: 52px; font-size: clamp(52px, 13vw, 68px); font-weight: 900; color: #ffd166;">
           粗心的
         </div>
       </section>

@@ -305,7 +305,7 @@ class _DashboardShellState extends State<DashboardShell>
         Map<String, dynamic> bundled = {};
         try {
           final data = await rootBundle.load('assets/www/audio_cache/manifest_index.json');
-          final str = utf8.decode(data.buffer.asUint8List());
+          final str = utf8.decode(data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
           bundled = jsonDecode(str) as Map<String, dynamic>;
         } catch (_) {}
         final merged = await SoundpackService.instance.getMergedManifestIndex(bundled);
@@ -328,9 +328,9 @@ class _DashboardShellState extends State<DashboardShell>
           return;
         }
       }
-      // 优先级 2: 兜底检索 APK 内置 assets
+      // 优先级 2: 兜底检索 APK/IPA 内置 assets
       final data = await rootBundle.load('assets/www$path');
-      final bytes = data.buffer.asUint8List();
+      final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
       req.response.statusCode = 200;
       req.response.headers.contentType = _mime(path);
       req.response.headers.set('Cache-Control', 'no-cache');
@@ -346,7 +346,9 @@ class _DashboardShellState extends State<DashboardShell>
 
   ContentType _mime(String path) {
     final p = path.toLowerCase();
-    if (p.endsWith('.html')) return ContentType.html;
+    if (p.endsWith('.html')) {
+      return ContentType('text', 'html', charset: 'utf-8');
+    }
     if (p.endsWith('.js')) {
       return ContentType('text', 'javascript', charset: 'utf-8');
     }
